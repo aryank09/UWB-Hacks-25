@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col scroll-smooth bg-black text-white">
 
     <!-- Hero Section -->
     <header class="flex-grow flex items-center justify-center p-4">
@@ -22,14 +22,14 @@
           Chat with our chat-bot to learn more about how in the future you can avoid getting scammed!
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <a
-            href="#chat"
+          <button
+            onclick="scrollToChat()"
             class="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600
                   px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300
                   font-semibold text-lg flex items-center gap-2"
           >
             <i data-lucide="zap" class="w-5 h-5"></i> Get Started
-          </a>
+          </button>
 
           <a
             href="https://github.com/aryank09/UWB-Hacks-25"
@@ -114,6 +114,14 @@
     <script>
       lucide.createIcons();
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      function scrollToChat() {
+        const chatSection = document.getElementById('chat');
+        if (chatSection) {
+          chatSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
       const input = document.getElementById('userInput');
       const chatbox = document.getElementById('chatbox');
 
