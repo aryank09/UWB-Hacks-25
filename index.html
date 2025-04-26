@@ -90,12 +90,12 @@
       <div id="chatbox" class="w-full max-w-2xl h-96 bg-gray-900 rounded-lg overflow-y-auto p-4 mb-4 border border-gray-800"></div>
       
       <div class="flex w-full max-w-2xl">
-        <input
+        <textarea
           id="userInput"
-          type="text"
           placeholder="Type your message..."
-          class="flex-grow p-3 rounded-l-lg bg-gray-800 border-t border-b border-l border-gray-700 focus:outline-none text-white"
-        />
+          rows="1"
+          class="flex-grow p-3 rounded-l-lg bg-gray-800 border-t border-b border-l border-gray-700 focus:outline-none text-white resize-none"
+        ></textarea>
         <button
           onclick="sendMessage()"
           class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-r-lg transition duration-300"
@@ -114,37 +114,43 @@
     <script>
       lucide.createIcons();
       document.getElementById("year").textContent = new Date().getFullYear();
-      async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const chatbox = document.getElementById('chatbox');
-        const message = input.value.trim();
-        
-        if (message === '') return;
-        
-        // Show user's message
-        chatbox.innerHTML += `<div class="mb-2"><strong>You:</strong> ${message}</div>`;
-        input.value = '';
-        
-        // Send message to your Python server
-        try {
-          const response = await fetch('http://localhost:5000/chat', {  // update port if needed
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: message })
-          });
-          
-          const data = await response.json();
-          
-          // Show bot's response
-          chatbox.innerHTML += `<div class="mb-2 text-purple-400"><strong>Bot:</strong> ${data.reply}</div>`;
-          chatbox.scrollTop = chatbox.scrollHeight; // auto scroll down
-        } catch (error) {
-          console.error('Error:', error);
-          chatbox.innerHTML += `<div class="mb-2 text-red-400"><strong>Error:</strong> Could not connect to server.</div>`;
-        }
+      const input = document.getElementById('userInput');
+      const chatbox = document.getElementById('chatbox');
+
+      input.addEventListener('keydown', async function(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); // prevent new line
+        await sendMessage();
       }
+      // If Shift+Enter, allow normal behavior (new line)
+    });
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      
+      if (message === '') return;
+      
+      // Show user's message
+      chatbox.innerHTML += `<div class="mb-2"><strong>You:</strong> ${message.replace(/\n/g, '<br>')}</div>`;
+      input.value = '';
+      
+      try {
+        const response = await fetch('http://localhost:5000/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        
+        // Show bot's response
+        chatbox.innerHTML += `<div class="mb-2 text-purple-400"><strong>Bot:</strong> ${data.reply}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      } catch (error) {
+        console.error('Error:', error);
+        chatbox.innerHTML += `<div class="mb-2 text-red-400"><strong>Error:</strong> Could not connect to server.</div>`;
+      }
+    }
     </script>
   </body>
 </html>
