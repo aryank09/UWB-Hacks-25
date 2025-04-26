@@ -1,66 +1,37 @@
+# chat_api.py
+
+from flask import Flask, request, jsonify
 from openai import OpenAI
 import os
-import json
 
+app = Flask(__name__)
 
-'''
-First, it ensures that the program is in the same directory as the python file itself.
-It then reads the OpenAI API key from a file stored in the same directory.
-It then reads the system message from another file stored in the same directory.
-'''
-########################################################################
-os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+# Load your OpenAI key and system prompt
+os.environ["OPENAI_API_KEY"] = open("keys.txt").read().strip()
+SYSTEM_PROMPT = open("system.txt").read().strip()
 
-f = open('keys.txt', 'r')
-key = f.read().strip()
-f = open('system.txt', 'r')
-system_message = f.read().strip()
+# Initialize the OpenAI client
+client = OpenAI()
 
-os.environ["OPENAI_API_KEY"] = key
-########################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def query_gpt(content : str, key : str, system_message : str):
-
-    client = OpenAI()
-    completion = client.beta.chat.completions.parse(
-        model='gpt-4o-mini',
-        store=False,
-        response_format=SentimentRating,
+@app.route("/chat", methods=["POST"])
+def chat():
+    # Extract the user's message from the JSON payload
+    user_msg = request.json.get("message", "")
+    
+    # Call the OpenAI Chat Completions API
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[
-            {   
-                "role": "developer",
-                "content": [
-                    {
-                    "type": "text", # have it generate only the number
-                    "text": system_message
-                    }
-                ]
-                },
-                {
-                "role": "user",
-                "content": [
-                    {
-                    "type": "text",
-                    "text": content
-                    }
-                ]
-                }
-        ]        
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user",   "content": user_msg},
+        ],
+        temperature=0.7
     )
     
-    return completion.choices[0].message.content
+    # Grab GPT's reply and return it as JSON
+    answer = resp.choices[0].message.content
+    return jsonify({"reply": answer})
+
+if __name__ == "__main__":
+    # Run the Flask development server on port 5000
+    app.run(debug=True, port=5000)

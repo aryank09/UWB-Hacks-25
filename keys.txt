@@ -1,0 +1,2 @@
+very insecure way of storing the API key lol.
+I'll work on putting the API key in an environment variable.
