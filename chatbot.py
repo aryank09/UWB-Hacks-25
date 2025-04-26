@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Load your OpenAI key and system prompt
 os.environ["OPENAI_API_KEY"] = open("keys.txt").read().strip()
-SYSTEM_PROMPT = open("system.txt").read().strip()
+SYSTEM_PROMPT = open("chatbot_system.txt").read().strip()
 
 # Initialize the OpenAI client
 client = OpenAI()
