@@ -1,4 +1,4 @@
-#!/Users/aryankhanna/Documents/GitHub/UWB-Hacks-25/.venv/bin/python3
+#!/Users/james/code/github/UWB-Hacks-25/.venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
