@@ -179,10 +179,17 @@
       }
 
       footer {
-        background-color: #222;
-        color: #888;
-        text-align: center;
-        padding: 20px;
+        position: relative;            /* enable absolute centering */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 2rem;
+      }
+
+      .footer-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
       }
 
       footer a {
@@ -427,16 +434,47 @@
 
     <!-- Footer -->
     <footer>
-      <!-- <p>© <span id="year"></span> Aryan Khanna. All rights reserved.</p> -->
+      <!-- Left: friend test -->
+      <div id="friend-test-container" class="flex items-center space-x-2">
+        <input
+          type="email"
+          id="friend-email-input"
+          placeholder="Friend’s email..."
+          class="bg-transparent border-b border-white text-white placeholder-gray-400 w-36 outline-none"
+        />
+        <button
+          onclick="generatePhishingLink()"
+          class="text-white hover:text-gray-500 font-semibold"
+        >
+          Test Your Friend
+        </button>
+      </div>
+    
+      <!-- Center: Phish [logo] Guard -->
+      <div class="footer-center flex items-center gap-2 text-white font-semibold">
+        <span>Phish</span>
+        <img
+          src="/static/company_logo_inverted.png"
+          alt="Logo"
+          class="h-12 w-auto"
+        />
+        <span>Guard</span>
+      </div>
+    
+      <!-- Right: GitHub link -->
       <a
         href="https://github.com/aryank09/UWB-Hacks-25"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-white hover:text-gray-500 transition-colors duration-300 font-semibold text-lg flex items-center gap-2"
+        class="text-white hover:text-gray-500 font-semibold flex items-center gap-2"
       >
-        <i data-lucide="github" class="w-5 h-5"></i> GitHub
+        <i data-lucide="github" class="w-5 h-5"></i>
+        GitHub
       </a>
     </footer>
+    
+    
+    
 
     <script>
       // ─── BOT + USER CONFIG ─────────────────────────────
@@ -583,5 +621,14 @@ Which would you like to do first?
       // Load chat history when the page loads
       window.onload = loadHistory;
     </script>
+
+    <script>
+      function generatePhishingLink() {
+        const input = document.getElementById('friend-email-input');
+        input.value = '';
+        input.placeholder = 'Phishing test sent!';
+      }
+    </script>
+  
   </body>
 </html>
