@@ -1,0 +1,1 @@
+[{"source": "user", "models_usage": null, "metadata": {}, "content": "HiHi", "type": "TextMessage"}, {"source": "assistant", "models_usage": {"prompt_tokens": 20, "completion_tokens": 10}, "metadata": {}, "content": "Hello! How can I assist you today?", "type": "TextMessage"}]
