@@ -31,25 +31,30 @@
         padding-right: 10px;
       }
 
-      .message {
-        margin: 15px 0;
-        padding: 12px;
-        border-radius: 10px;
-        max-width: 80%;
+      /* header row inside each .message */
+      .message-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
       }
 
-      .message.user {
-        background-color: #4a90e2;
+      /* circular bot icon */
+      .sender-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 8px;
+        object-fit: cover;
+      }
+
+      /* bold name label */
+      .label {
+        font-weight: bold;
+        font-size: 0.9rem;
         color: white;
-        margin-left: auto;
-        border-radius: 12px 12px 0 12px;
       }
 
-      .message.assistant {
-        background-color: #333;
-        color: #ddd;
-        border-radius: 12px 12px 12px 0;
-      }
+      
 
       .message.error {
         color: #721c24;
@@ -131,6 +136,85 @@
       footer a:hover {
         color: #fff;
       }
+
+      /* ─── flex layout & alignment ───────────────────── */
+      /* 1) THE OUTER WRAPPER: no bubble styling here */
+      .message {
+        display: flex;
+        align-items: flex-start;
+        margin: 12px 0;
+        padding: 0;       /* remove old padding */
+        background: none; /* remove old background */
+      }
+
+      /* 2) FLOAT LEFT/RIGHT */
+      .message.assistant { justify-content: flex-start; }
+      .message.user      { justify-content: flex-end;   }
+
+      /* 3) THE CHAT BUBBLE */
+      .message-content {
+        padding: 10px 14px;
+        border-radius: 8px;
+        line-height: 1.4;
+        background-color: #333;
+        color: #ddd;
+        max-width: 100%;
+      }
+
+      /* 4) OVERRIDE FOR USER BUBBLE */
+      .message.user .message-content {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+
+      /* assistant left, user right */
+      .message.assistant { justify-content: flex-start; }
+      .message.user      { justify-content: flex-end;   }
+
+      /* ─── avatar container ─────────────────────────── */
+      .message-avatar {
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+      }
+      .message.user .message-avatar {
+        display: none;  /* no avatar for user */
+      }
+
+      /* ─── body (name + bubble) ─────────────────────── */
+      .message-body {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+      }
+
+      /* sender name above bubble */
+      .sender {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+        color: white;
+      }
+
+      .message.assistant .message-content {
+        background-color: #333;
+        color: #ddd;
+      }
+
+      .message.user .message-content {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+      /* bot icon styling */
+      .sender-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
     </style>
   </head>
   <body class="min-h-screen flex flex-col scroll-smooth bg-black text-white">
@@ -268,6 +352,11 @@
     </footer>
 
     <script>
+      // ─── BOT + USER CONFIG ─────────────────────────────
+      const BOT_NAME = "Phishy";
+      const BOT_ICON = "/static/chatbot_icon.png";  // put your PNG in ./static/
+      const USER_NAME = "You";
+      // ────────────────────────────────────────────────────
       firstMessage = `Hey there! 👋  
 No worries — you're safe here.  
 You just experienced a **simulated phishing attempt** — and it's a good thing!  
@@ -275,7 +364,13 @@ You just experienced a **simulated phishing attempt** — and it's a good thing!
 Phishing is when someone tries to trick you into clicking bad links, giving up passwords, or downloading harmful stuff. It happens every day to millions of people.  
   
 Let’s work together to make sure you can **spot and stop** phishing attacks in the future! 🚀  
-Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
+
+Which would you like to do first?
+1) Learn what phishing is and how it tricks people
+2) Get three quick, easy safety tips
+3) Try a short quiz to spot a phishy message
+
+(Type "1" "2" or "3" to select an option or ask any question!)`;
 
       document
         .getElementById("message-input")
@@ -337,29 +432,51 @@ Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
 
       function displayMessage(content, source) {
         const messagesContainer = document.getElementById("messages");
-        const messageElement = document.createElement("div");
-        messageElement.className = `message ${source}`;
 
-        const labelElement = document.createElement("span");
-        labelElement.className = "label";
-        labelElement.textContent = source;
+        // 1) outer wrapper
+        const msgEl = document.createElement("div");
+        msgEl.className = `message ${source}`;
 
-        const contentElement = document.createElement("div");
-        contentElement.className = "content";
+        // 2) avatar slot
+        const avatarEl = document.createElement("div");
+        avatarEl.className = "message-avatar";
+        if (source === "assistant") {
+          const img = document.createElement("img");
+          img.src = BOT_ICON;
+          img.alt = BOT_NAME;
+          img.className = "sender-icon";
+          avatarEl.appendChild(img);
+        }
+        msgEl.appendChild(avatarEl);
 
-        // Simple Markdown parsing:
-        const formattedContent = content
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold **text**
-          .replace(/\n/g, "<br>") // New lines
-          .replace(/`(.*?)`/g, "<code>$1</code>"); // Inline code `text`
+        // 3) body (name + bubble)
+        const bodyEl = document.createElement("div");
+        bodyEl.className = "message-body";
 
-        contentElement.innerHTML = formattedContent;
+        // 3a) sender name
+        const senderEl = document.createElement("div");
+        senderEl.className = "sender";
+        senderEl.textContent = source === "assistant" ? BOT_NAME : USER_NAME;
+        bodyEl.appendChild(senderEl);
 
-        messageElement.appendChild(labelElement);
-        messageElement.appendChild(contentElement);
-        messagesContainer.appendChild(messageElement);
+        // 3b) bubble content
+        const contentEl = document.createElement("div");
+        contentEl.className = "message-content";
+        const formatted = content
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br>")
+          .replace(/`(.*?)`/g, "<code>$1</code>");
+        contentEl.innerHTML = formatted;
+        bodyEl.appendChild(contentEl);
+
+        msgEl.appendChild(bodyEl);
+
+        // 4) add to DOM
+        messagesContainer.appendChild(msgEl);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
+
+
 
       async function loadHistory() {
         try {
