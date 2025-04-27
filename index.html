@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+      html, body {
+        overflow-x: hidden;
+      }
+
       #chat-container {
         width: 90%;
         max-width: 1000px;
@@ -26,32 +30,42 @@
       #messages {
         height: 80%;
         overflow-y: auto;
+        overflow-x: hidden;
         border-bottom: 2px solid #444;
         margin-bottom: 20px;
         padding-right: 10px;
       }
 
-      /* header row inside each .message */
-      .message-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.25rem;
+      /* ─── 3) Remove white track & arrows from the chat scrollbar ───────────────── */
+      #messages::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+      }
+      #messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #messages::-webkit-scrollbar-thumb {
+        background-color: #555;
+        border-radius: 4px;
+      }
+      #messages::-webkit-scrollbar-button {
+        display: none;
       }
 
-      /* circular bot icon */
+      /* Firefox */
+      #messages {
+        /* remove fixed height and bottom border */
+        flex: 1;              
+        border-bottom: none;  
+        margin-bottom: 0;
+      }
+
+      /* ─── perfect circle avatar ───────────────────── */
       .sender-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        margin-right: 8px;
-        object-fit: cover;
-      }
-
-      /* bold name label */
-      .label {
-        font-weight: bold;
-        font-size: 0.9rem;
-        color: white;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;           /* fill the container, cropping evenly */
+        /* you can drop its own border-radius now since the container handles it */
       }
 
       
@@ -74,16 +88,31 @@
         margin: 10px 0;
       }
 
+      /* ─── snug input bar ─────────────────────────── */
       #input-container {
         display: flex;
         align-items: center;
-        border-top: 2px solid #444;
-        padding-top: 10px;
+        border-top: 2px solid #444; /* the divider-line above the box & button */
+        padding: 8px 0;
       }
+      
+      #input-container input {
+        flex: 1;               /* fill all space to the left of the button */
+        box-sizing: border-box;
+        height: 40px;          /* keep the same height as button */
+        padding: 0 12px;
+        margin-right: 10px;
+      }
+
+      /* #input-container button {
+        height: 40px;
+        box-sizing: border-box;
+      } */
+
 
       #input-container input {
         flex: 1;
-        padding: 12px;
+        padding: 8px 12px;
         border-radius: 25px;
         border: 1px solid #555;
         background-color: #222;
@@ -99,8 +128,23 @@
         box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
       }
 
-      #input-container button {
+      /* #input-container button {
         padding: 12px 18px;
+        border: none;
+        background-color: #4a90e2;
+        color: white;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      } */
+
+      #input-container button {
+        display: inline-flex;        /* turn on flex alignment */
+        align-items: center;         /* vertical center */
+        justify-content: center;     /* horizontal center */
+        height: 40px;                /* match your input */
+        padding: 0 18px;             /* remove vertical padding */
+        box-sizing: border-box;
         border: none;
         background-color: #4a90e2;
         color: white;
@@ -169,14 +213,18 @@
 
 
       /* assistant left, user right */
-      .message.assistant { justify-content: flex-start; }
-      .message.user      { justify-content: flex-end;   }
+      /* .message.assistant { justify-content: flex-start; } */
+      /* .message.user      { justify-content: flex-end;   } */
 
       /* ─── avatar container ─────────────────────────── */
       .message-avatar {
-        width: 32px;
-        height: 32px;
-        margin-right: 8px;
+        margin-right: 12px;          /* push content away from icon */
+        width: 56px;                 
+        height: 56px;
+        border-radius: 50%;          /* make container round */
+        overflow: hidden;            /* crop any overflow */
+        flex-shrink: 0;              /* never shrink */
+        background: #333;            /* optional fallback if icon has transparency */
       }
       .message.user .message-avatar {
         display: none;  /* no avatar for user */
@@ -205,14 +253,6 @@
       .message.user .message-content {
         background-color: #4a90e2;
         color: #fff;
-      }
-
-      /* bot icon styling */
-      .sender-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
       }
 
     </style>
