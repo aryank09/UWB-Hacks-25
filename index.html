@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +8,19 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
       html, body {
+        background-color: white;
+        /* #fdf7e3;   a soft cream */
+        color: #000;                 /* default text black */
         overflow-x: hidden;
+      }
+
+      header h1 {
+        color: rgb(111, 27, 27);
+        background: none;
+      }
+
+      header p {
+        color: #000 !important;
       }
 
       #chat-container {
@@ -66,6 +78,9 @@
         height: 100%;
         object-fit: cover;           /* fill the container, cropping evenly */
         /* you can drop its own border-radius now since the container handles it */
+
+        border: 2px solid rgb(111, 27, 27) !important;
+        border-radius: 50%;  
       }
 
       
@@ -200,8 +215,9 @@
         padding: 10px 14px;
         border-radius: 8px;
         line-height: 1.4;
-        background-color: #333;
-        color: #ddd;
+        background-color: #fdf7e3;
+        /* background-color: #333; */
+        color: #000;
         max-width: 100%;
       }
 
@@ -255,24 +271,104 @@
         color: #fff;
       }
 
+      #chat-container {
+        margin-top: -150px;   /* pulls the whole box up—tweak the “150px” until it’s exactly where you want */
+        margin-bottom: 2rem;  /* gives a nice gap down to the footer */
+      }
+
+      #chat-container {
+        background-color: transparent !important;
+        border: 2px solid rgb(111, 27, 27) !important;
+      }
+
+      /* ─── 2) Footer – same maroon background ───────────────── */
+      footer {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* 1) Make the “Send” button maroon */
+      #input-container button {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* 2) Text‐entry box → cream background, black text, maroon border */
+      #input-container input {
+        background-color: #fdf7e3 !important;
+        color: #000           !important;
+        border: 1px solid rgb(111, 27, 27) !important;
+      }
+
+      /* 3) Assistant’s bubbles → cream & black text */
+      .message.assistant .message-content {
+        background-color: #fdf7e3 !important;
+        color: #000               !important;
+      }
+
+      /* 4) User’s bubbles → maroon & black text */
+      .message.user .message-content {
+        background-color: rgb(111, 27, 27) !important;
+        color: #fff                 !important;
+      }
+
+      /* 5) Bar above the input area → maroon, nudged up slightly */
+      #input-container {
+        border-top: 2px solid rgb(111, 27, 27) !important;
+        position: relative;
+        top: -2px; /* pull the bar up by 2px; tweak as you like */
+      }
+
+      /* Centered logo above the headings */
+      .company-logo {
+        display: block;
+        width: 200px;            /* bigger size */
+        height: auto;
+        margin: -1rem auto 1rem; /* negative top margin to lift it up, then 1rem below */
+      }
+
+      /* ─── 1) Lift the logo higher ───────────────── */
+      .company-logo {
+        /* keep it big, but pull it up */
+        width: 200px;
+        height: auto;
+        margin: -4rem auto 1rem;    /* negative top margin lifts it up */
+      }
+
+      /* ─── 2) Lift the header text up, too ───────────────── */
+      header .text-center {
+        position: relative;
+        top: -2rem;                 /* moves the whole block upward */
+      }
+
+      /* ─── 3) (optional) reduce the header’s top padding if you still need more space ─ */
+      header {
+        padding-top: 0.5rem !important;
+      }
+
+
+
     </style>
   </head>
-  <body class="min-h-screen flex flex-col scroll-smooth bg-black text-white">
+  <body class="min-h-screen flex flex-col scroll-smooth">
     <header class="flex items-center justify-center h-screen p-4">
       <div class="text-center space-y-6 w-screen">
+        <img
+          src="/static/company_logo_red.png"
+          alt="Company Logo"
+          class="company-logo"
+        />
         <h1
-          class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+          class="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
         >
           YOU JUST GOT SCAMMED!
         </h1>
         <h1
-          class="text-4xl sm:text-3xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+          class="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
         >
           But you can prevent it with us
         </h1>
         <div class="w-screen">
           <p
-            class="text-lg sm:text-xl md:text-xl text-gray-300 max-w-3xl mx-auto"
+            class="text-lg sm:text-xl md:text-xl max-w-3xl mx-auto"
           >
             Chat with our chat-bot <br />
             Learn how to avoid being scammed
@@ -280,94 +376,6 @@
         </div>
       </div>
     </header>
-    <!-- Features Section -->
-
-    <section class="py-16 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl mx-auto space-y-12">
-        <h2
-          class="text-3xl sm:text-4xl font-semibold text-center text-gray-200"
-        >
-          Key Features
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          <!-- Feature Card 1 -->
-          <div
-            class="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-xl"
-          >
-            <i data-lucide="mail" class="w-8 h-8 text-yellow-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              Friend Phishing Test
-            </h3>
-            <p class="text-gray-300">
-              Safely prank your friends by generating a phishing simulation
-              link, helping them learn to detect scams in a real-world way.
-            </p>
-          </div>
-
-          <!-- Feature Card 2 -->
-          <div
-            class="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-xl"
-          >
-            <i data-lucide="file-text" class="w-8 h-8 text-pink-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              Phishing Email AI Generator
-            </h3>
-            <p class="text-gray-300">
-              Use AI to generate realistic (but safe) phishing emails designed
-              to educate users on how scams look in the wild.
-            </p>
-          </div>
-
-          <!-- Feature Card 3 -->
-          <div
-            class="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-xl"
-          >
-            <i
-              data-lucide="alert-triangle"
-              class="w-8 h-8 text-red-400 mb-4"
-            ></i>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              Click Analysis and Education
-            </h3>
-            <p class="text-gray-300">
-              After clicking a simulated phishing link, users receive instant
-              feedback explaining what made the email suspicious and how to stay
-              safer next time.
-            </p>
-          </div>
-
-          <!-- Feature Card 4 -->
-          <div
-            class="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-xl"
-          >
-            <i data-lucide="shield" class="w-8 h-8 text-green-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              AI Red Team Challenge
-            </h3>
-            <p class="text-gray-300">
-              Test your skills against our AI Red Team! Identify whether
-              messages are safe or phishing attempts through quick interactive
-              challenges.
-            </p>
-          </div>
-
-          <!-- Feature Card 5 -->
-          <div
-            class="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800 hover:border-gray-700 transition-all duration-300 hover:shadow-xl"
-          >
-            <i data-lucide="bot" class="w-8 h-8 text-purple-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-white mb-2">
-              AI Cybersecurity Trainer
-            </h3>
-            <p class="text-gray-300">
-              Chat live with our AI Security Coach to learn phishing defenses,
-              get simple tips, and understand cyber threats in easy language.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- Chat Container -->
     <div id="chat-container">
