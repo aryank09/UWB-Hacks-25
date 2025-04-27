@@ -77,11 +77,43 @@ example_email2 = """<!DOCTYPE html>
 </body>
 </html>
 """
+
+example_email3 = """<div class="bg-gray-900 text-gray-200 p-6 rounded-lg shadow-md max-w-2xl mx-auto my-6">
+  <h2 class="text-2xl font-bold mb-4 text-white">Subject: Quick review needed on Hackathon slides</h2>
+  
+  <p class="mb-4">
+    Hi James,
+  </p>
+
+  <p class="mb-4">
+    Congrats again on winning <strong>Best Security Hack 2025</strong> — seriously well deserved! 🎉
+  </p>
+
+  <p class="mb-4">
+    We’re finalizing some security review docs for the upcoming <strong>InnovatorsHub</strong> pitch deck, and since you worked on the <strong>Hackathon Cybersecurity Presentation</strong>, it would be great if you could review the attached slides by EOD today.
+  </p>
+
+  <p class="mb-4">
+    Here’s the secure link to access the draft:<br>
+    👉 <a href="https://secure-review-docs.com/authenticate-login" class="text-blue-400 underline hover:text-blue-300" target="_blank">https://secure-review-docs.com/authenticate-login</a>
+  </p>
+
+  <p class="mb-6">
+    Let me know if you spot anything that needs updating. Thanks a ton!
+  </p>
+
+  <div class="mt-6 text-gray-400">
+    —<br>
+    Rachel K.<br>
+    Innovation Lead, InnovatorsHub
+  </div>
+</div>
+"""
 message = Mail(
     from_email='jamesb816438@outlook.com',
     to_emails='tstrzyz@uw.edu',
     subject='HIHIHIHIH PHISH  (not)',
-    html_content=example_email2)
+    html_content=example_email3)
 try:
     sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
     response = sg.send(message)
