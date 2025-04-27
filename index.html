@@ -344,6 +344,23 @@
         padding-top: 0.5rem !important;
       }
 
+      footer {
+        display: flex;
+        align-items: center;      /* vertical centering */
+        justify-content: space-between; /* push items to extremes */
+        padding: 20px 2rem;       /* your existing padding */
+      }
+
+      /* Push the GitHub link to the right */
+      footer a {
+        margin-left: auto;   /* keep it pushed right */
+        margin-right: 1rem;  /* pull it 1rem in from the edge */
+      }
+
+      /* Tidy up any default margins */
+      footer p {
+        margin: 0;
+      }
 
 
     </style>
@@ -388,7 +405,7 @@
 
     <!-- Footer -->
     <footer>
-      <p>© <span id="year"></span> Aryan Khanna. All rights reserved.</p>
+      <!-- <p>© <span id="year"></span> Aryan Khanna. All rights reserved.</p> -->
       <a
         href="https://github.com/aryank09/UWB-Hacks-25"
         target="_blank"
