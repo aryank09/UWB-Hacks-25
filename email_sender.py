@@ -95,7 +95,7 @@ example_email3 = """<div class="bg-gray-900 text-gray-200 p-6 rounded-lg shadow-
 
   <p class="mb-4">
     Here’s the secure link to access the draft:<br>
-    👉 <a href="https://secure-review-docs.com/authenticate-login" class="text-blue-400 underline hover:text-blue-300" target="_blank">https://secure-review-docs.com/authenticate-login</a>
+    👉 <a href="http://127.0.0.1:8001/" class="text-blue-400 underline hover:text-blue-300" target="_blank">https://secure-review-docs.com/authenticate-login</a>
   </p>
 
   <p class="mb-6">
@@ -109,18 +109,24 @@ example_email3 = """<div class="bg-gray-900 text-gray-200 p-6 rounded-lg shadow-
   </div>
 </div>
 """
-message = Mail(
-    from_email='jamesb816438@outlook.com',
-    to_emails='tstrzyz@uw.edu',
-    subject='HIHIHIHIH PHISH  (not)',
-    html_content=example_email3)
-try:
-    sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-    response = sg.send(message)
-    print(response.status_code)
-    print(response.body)
-    print(response.headers)
-except Exception as e:
-    print(e.message)
+
+
+def send_email():
+    message = Mail(
+        from_email='tstrzyz@uw.edu',
+        to_emails='ruslanr@uw.edu',
+        subject='Quick review needed on Hackathon slides',
+        html_content=example_email3)
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(str(e))
+
+
+send_email()
 # send_email(subject, body, to_email, from_email,
 #            from_password, smtp_server, smtp_port)

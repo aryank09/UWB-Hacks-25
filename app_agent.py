@@ -16,7 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from email_sender import send_email
-
+from generate_phishing_email import generate_phishing_email
 
 app = FastAPI()
 
@@ -120,11 +120,15 @@ async def chat(request: TextMessage) -> TextMessage:
 @app.post("/send-email/")
 def trigger_email(subject: str, body: str, to_email: str, from_email: str, from_password: str, smtp_server: str, smtp_port: int):
     # send_email(subject, body, to_email, from_email, from_password, smtp_server, smtp_port)
-    send_email("", "", "", "", "", "", "")
+    send_email()
     return {"message": "Email sent successfully"}
 #  send_email("","", "", "", "", "", "")
 #    send_email(subject, body, to_email, from_email, from_password, smtp_server, smtp_port)
 
+
+@app.post("/generate-phishing-email")
+async def generate_email_endpoint():
+    return await generate_phishing_email()
 
 # Example usage
 if __name__ == "__main__":
