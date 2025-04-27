@@ -15,6 +15,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from email_sender import send_email
+
+
 app = FastAPI()
 
 # Add CORS middleware
@@ -112,6 +115,15 @@ async def chat(request: TextMessage) -> TextMessage:
             "source": "system"
         }
         raise HTTPException(status_code=500, detail=error_message) from e
+
+
+@app.post("/send-email/")
+def trigger_email(subject: str, body: str, to_email: str, from_email: str, from_password: str, smtp_server: str, smtp_port: int):
+    # send_email(subject, body, to_email, from_email, from_password, smtp_server, smtp_port)
+    send_email("", "", "", "", "", "", "")
+    return {"message": "Email sent successfully"}
+#  send_email("","", "", "", "", "", "")
+#    send_email(subject, body, to_email, from_email, from_password, smtp_server, smtp_port)
 
 
 # Example usage

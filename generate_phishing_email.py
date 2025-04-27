@@ -36,7 +36,7 @@ Here are the details of the target:
 - Hobbies: {profile.hobbies}
 - Recent Event: {profile.recent_event}
 
-Write a short, natural, believable email that:
+Write a short, natural, believable email IN HTML that:
 - Mentions their project or recent event
 - Embeds a fake secure link (use https://secure-review-docs.com)
 - Sounds urgent but friendly
