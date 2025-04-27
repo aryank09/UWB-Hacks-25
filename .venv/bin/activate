@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/aryankhanna/Documents/GitHub/UWB-Hacks-25/.venv"
+VIRTUAL_ENV="/Users/james/code/github/UWB-Hacks-25/.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
