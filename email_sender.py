@@ -3,7 +3,7 @@
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-
+# ../../../../../opt/homebrew/bin/python3.11 app_agent.py
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -81,7 +81,7 @@ message = Mail(
     from_email='jamesb816438@outlook.com',
     to_emails='tstrzyz@uw.edu',
     subject='HIHIHIHIH PHISH  (not)',
-    html_content='<strong>Trololololo haha vs code</strong>')
+    html_content=example_email2)
 try:
     sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
     response = sg.send(message)

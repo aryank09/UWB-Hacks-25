@@ -40,6 +40,12 @@ model_config_path = "model_config.yaml"
 state_path = "agent_state.json"
 history_path = "agent_history.json"
 
+llm_prompt_context = """You are a friendly cybersecurity coach. Your mission is to educate users who just clicked on a phishing simulation link. Speak in a positive, non-judgmental tone.  
+Explain why phishing is dangerous, how it tricks people, and give at least 3 practical tips to stay safe online.  
+Use simple, clear language. Keep responses short and focused — no technical jargon unless explained clearly.  
+Encourage questions. Your goal is to make the user feel empowered, not scared.
+"""
+
 
 async def get_agent() -> AssistantAgent:
     """Get the assistant agent, load state from file."""
@@ -51,7 +57,7 @@ async def get_agent() -> AssistantAgent:
     agent = AssistantAgent(
         name="assistant",
         model_client=model_client,
-        system_message="You are a helpful assistant.",
+        system_message=llm_prompt_context,
     )
     # Load state from file.
     if not os.path.exists(state_path):

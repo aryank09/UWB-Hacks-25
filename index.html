@@ -136,14 +136,20 @@
   <body class="min-h-screen flex flex-col scroll-smooth bg-black text-white">
     <header class="flex items-center justify-center h-screen p-4">
       <div class="text-center space-y-6 w-screen">
-        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        <h1
+          class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+        >
           YOU JUST GOT SCAMMED!
         </h1>
-        <h1 class="text-4xl sm:text-3xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+        <h1
+          class="text-4xl sm:text-3xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+        >
           But you can prevent it with us
         </h1>
         <div class="w-screen">
-          <p class="text-lg sm:text-xl md:text-xl text-gray-300 max-w-3xl mx-auto">
+          <p
+            class="text-lg sm:text-xl md:text-xl text-gray-300 max-w-3xl mx-auto"
+          >
             Chat with our chat-bot <br />
             Learn how to avoid being scammed
           </p>
@@ -155,11 +161,7 @@
     <div id="chat-container">
       <div id="messages"></div>
       <div id="input-container">
-        <input
-          type="text"
-          id="message-input"
-          placeholder="Type a message..."
-        />
+        <input type="text" id="message-input" placeholder="Type a message..." />
         <button onclick="sendMessage()">Send</button>
       </div>
     </div>
@@ -178,6 +180,15 @@
     </footer>
 
     <script>
+      firstMessage = `Hey there! 👋  
+No worries — you're safe here.  
+You just experienced a **simulated phishing attempt** — and it's a good thing!  
+  
+Phishing is when someone tries to trick you into clicking bad links, giving up passwords, or downloading harmful stuff. It happens every day to millions of people.  
+  
+Let’s work together to make sure you can **spot and stop** phishing attacks in the future! 🚀  
+Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
+
       document
         .getElementById("message-input")
         .addEventListener("keydown", function (event) {
@@ -185,6 +196,8 @@
             sendMessage();
           }
         });
+
+      displayMessage(firstMessage, "assistant");
 
       async function sendMessage() {
         const input = document.getElementById("message-input");
@@ -245,7 +258,14 @@
 
         const contentElement = document.createElement("div");
         contentElement.className = "content";
-        contentElement.textContent = content;
+
+        // Simple Markdown parsing:
+        const formattedContent = content
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold **text**
+          .replace(/\n/g, "<br>") // New lines
+          .replace(/`(.*?)`/g, "<code>$1</code>"); // Inline code `text`
+
+        contentElement.innerHTML = formattedContent;
 
         messageElement.appendChild(labelElement);
         messageElement.appendChild(contentElement);

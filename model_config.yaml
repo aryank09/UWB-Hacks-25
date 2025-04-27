@@ -1,7 +1,7 @@
 # Use Open AI with key
 provider: autogen_ext.models.openai.OpenAIChatCompletionClient
 config:
-  model: gpt-4o
+  model: gpt-4.1
   api_key: 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
 # Use Azure Open AI with key
 # provider: autogen_ext.models.openai.AzureOpenAIChatCompletionClient

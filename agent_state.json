@@ -1,1 +1,0 @@
-{"type": "AssistantAgentState", "version": "1.0.0", "llm_context": {"messages": [{"content": "HiHi", "source": "user", "type": "UserMessage"}, {"content": "Hello! How can I assist you today?", "thought": null, "source": "assistant", "type": "AssistantMessage"}]}}
