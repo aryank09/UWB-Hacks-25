@@ -362,6 +362,28 @@
         margin: 0;
       }
 
+      /* Maroon scrollbar thumb in the chat area */
+      #messages::-webkit-scrollbar-thumb {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* Transparent track on WebKit browsers */
+      #messages::-webkit-scrollbar-track {
+        background: transparent !important;
+      }
+
+      /* Firefox scrollbar coloring: thumb then track */
+      #messages {
+        scrollbar-color: rgb(111, 27, 27) transparent !important;
+      }
+
+      /* Make the sender name (“Phishy” and “You”) maroon */
+      .sender {
+        color: rgb(111, 27, 27) !important;
+      }
+
+      
+
 
     </style>
   </head>
