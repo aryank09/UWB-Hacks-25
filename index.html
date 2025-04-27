@@ -389,7 +389,16 @@
         color: rgb(111, 27, 27) !important;
       }
 
-      
+      /* ─── typing-indicator bounce ───────────────── */
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+      }
+
+      .message.typing .message-avatar {
+        animation: bounce 0.6s ease-in-out infinite;
+      }
+
 
 
     </style>
@@ -507,53 +516,81 @@ Which would you like to do first?
 
       displayMessage(firstMessage, "assistant");
 
-      async function sendMessage() {
-        const input = document.getElementById("message-input");
-        const button = document.querySelector("#input-container button");
-        const message = input.value;
-        if (!message) return;
+      
+      function showTypingIndicator() {
+        const messagesContainer = document.getElementById("messages");
+        const typingEl = document.createElement("div");
+        typingEl.className = "message assistant typing";
 
-        // Display user message
-        displayMessage(message, "user");
+        const avatarEl = document.createElement("div");
+        avatarEl.className = "message-avatar";
+        const img = document.createElement("img");
+        img.src = BOT_ICON;
+        img.alt = BOT_NAME;
+        img.className = "sender-icon";
+        avatarEl.appendChild(img);
 
-        // Clear input and disable controls
-        input.value = "";
-        input.disabled = true;
-        button.disabled = true;
+        typingEl.appendChild(avatarEl);
+        messagesContainer.appendChild(typingEl);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return typingEl;
+      }
+      
 
-        try {
-          const response = await fetch("http://localhost:8001/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ content: message, source: "user" }),
-          });
 
-          const data = await response.json();
-          if (!response.ok) {
-            // Handle error response
-            if (data.detail && data.detail.type === "error") {
+      
+        async function sendMessage() {
+          const input   = document.getElementById("message-input");
+          const button  = document.querySelector("#input-container button");
+          const userMsg = input.value.trim();
+          if (!userMsg) return;
+
+          // show user’s own message
+          displayMessage(userMsg, "user");
+
+          // clear + disable
+          input.value     = "";
+          input.disabled  = true;
+          button.disabled = true;
+
+          // start typing-indicator
+          const typingEl = showTypingIndicator();
+
+          let data, ok;
+          try {
+            const response = await fetch("http://localhost:8001/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ content: userMsg, source: "user" }),
+            });
+            ok   = response.ok;
+            data = await response.json();
+          } catch (error) {
+            console.error("Error:", error);
+            ok   = false;
+            data = { detail: "Could not reach the server." };
+          }
+
+          // remove the “typing” avatar
+          typingEl.remove();
+
+          // show the real reply (or error)
+          if (ok) {
+            displayMessage(data.content, "assistant");
+          } else {
+            if (data.detail?.type === "error") {
               displayMessage(data.detail.content, "error");
             } else {
-              displayMessage(
-                "Error: " + (data.detail || "Unknown error"),
-                "error"
-              );
+              displayMessage("Error: " + (data.detail || "Unknown error"), "error");
             }
-          } else {
-            displayMessage(data.content, "assistant");
           }
-        } catch (error) {
-          console.error("Error:", error);
-          displayMessage("Error: Could not reach the server.", "error");
-        } finally {
-          // Re-enable controls
-          input.disabled = false;
+
+          // re-enable
+          input.disabled  = false;
           button.disabled = false;
           input.focus();
         }
-      }
+
 
       function displayMessage(content, source) {
         const messagesContainer = document.getElementById("messages");
