@@ -29,8 +29,13 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Serve static files
-app.mount("/static", StaticFiles(directory="."), name="static")
+# mount the `static` folder at the URL path `/static`
+BASE_DIR = os.path.dirname(__file__)
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static",
+)
 
 
 @app.get("/")
@@ -43,11 +48,10 @@ model_config_path = "model_config.yaml"
 state_path = "agent_state.json"
 history_path = "agent_history.json"
 
-llm_prompt_context = """You are a friendly cybersecurity coach. Your mission is to educate users who just clicked on a phishing simulation link. Speak in a positive, non-judgmental tone.  
-Explain why phishing is dangerous, how it tricks people, and give at least 3 practical tips to stay safe online.  
-Use simple, clear language. Keep responses short and focused — no technical jargon unless explained clearly.  
-Encourage questions. Your goal is to make the user feel empowered, not scared.
-"""
+@app.on_event("startup")
+async def clear_history_file():
+    if os.path.exists(history_path):
+        os.remove(history_path)
 
 
 async def get_agent() -> AssistantAgent:
@@ -56,12 +60,18 @@ async def get_agent() -> AssistantAgent:
     async with aiofiles.open(model_config_path, "r") as file:
         model_config = yaml.safe_load(await file.read())
     model_client = ChatCompletionClient.load_component(model_config)
+
+    # Load system prompt context from file
+    async with aiofiles.open("system_prompt.txt", "r") as prompt_file:
+        llm_prompt_context = await prompt_file.read()
+
     # Create the assistant agent.
     agent = AssistantAgent(
         name="assistant",
         model_client=model_client,
         system_message=llm_prompt_context,
     )
+
     # Load state from file.
     if not os.path.exists(state_path):
         return agent  # Return agent without loading state.
@@ -69,6 +79,7 @@ async def get_agent() -> AssistantAgent:
         state = json.loads(await file.read())
     await agent.load_state(state)
     return agent
+
 
 
 async def get_history() -> list[dict[str, Any]]:
@@ -99,12 +110,12 @@ async def chat(request: TextMessage) -> TextMessage:
         async with aiofiles.open(state_path, "w") as file:
             await file.write(json.dumps(state))
 
-        # Save chat history to file.
-        history = await get_history()
-        history.append(request.model_dump())
-        history.append(response.chat_message.model_dump())
-        async with aiofiles.open(history_path, "w") as file:
-            await file.write(json.dumps(history))
+        # # Save chat history to file.
+        # history = await get_history()
+        # history.append(request.model_dump())
+        # history.append(response.chat_message.model_dump())
+        # async with aiofiles.open(history_path, "w") as file:
+        #     await file.write(json.dumps(history))
 
         assert isinstance(response.chat_message, TextMessage)
         return response.chat_message

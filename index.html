@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +7,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+      html, body {
+        background-color: white;
+        /* #fdf7e3;   a soft cream */
+        color: #000;                 /* default text black */
+        overflow-x: hidden;
+      }
+
+      header h1 {
+        color: rgb(111, 27, 27);
+        background: none;
+      }
+
+      header p {
+        color: #000 !important;
+      }
+
       #chat-container {
         width: 90%;
         max-width: 1000px;
@@ -26,30 +42,48 @@
       #messages {
         height: 80%;
         overflow-y: auto;
+        overflow-x: hidden;
         border-bottom: 2px solid #444;
         margin-bottom: 20px;
         padding-right: 10px;
       }
 
-      .message {
-        margin: 15px 0;
-        padding: 12px;
-        border-radius: 10px;
-        max-width: 80%;
+      /* ─── 3) Remove white track & arrows from the chat scrollbar ───────────────── */
+      #messages::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+      }
+      #messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #messages::-webkit-scrollbar-thumb {
+        background-color: #555;
+        border-radius: 4px;
+      }
+      #messages::-webkit-scrollbar-button {
+        display: none;
       }
 
-      .message.user {
-        background-color: #4a90e2;
-        color: white;
-        margin-left: auto;
-        border-radius: 12px 12px 0 12px;
+      /* Firefox */
+      #messages {
+        /* remove fixed height and bottom border */
+        flex: 1;              
+        border-bottom: none;  
+        margin-bottom: 0;
       }
 
-      .message.assistant {
-        background-color: #333;
-        color: #ddd;
-        border-radius: 12px 12px 12px 0;
+      /* ─── perfect circle avatar ───────────────────── */
+      .sender-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;           /* fill the container, cropping evenly */
+        /* you can drop its own border-radius now since the container handles it */
+
+        border: 2px solid rgb(111, 27, 27) !important;
+        border-radius: 50%;  
       }
+
+      
 
       .message.error {
         color: #721c24;
@@ -69,16 +103,31 @@
         margin: 10px 0;
       }
 
+      /* ─── snug input bar ─────────────────────────── */
       #input-container {
         display: flex;
         align-items: center;
-        border-top: 2px solid #444;
-        padding-top: 10px;
+        border-top: 2px solid #444; /* the divider-line above the box & button */
+        padding: 8px 0;
       }
+      
+      #input-container input {
+        flex: 1;               /* fill all space to the left of the button */
+        box-sizing: border-box;
+        height: 40px;          /* keep the same height as button */
+        padding: 0 12px;
+        margin-right: 10px;
+      }
+
+      /* #input-container button {
+        height: 40px;
+        box-sizing: border-box;
+      } */
+
 
       #input-container input {
         flex: 1;
-        padding: 12px;
+        padding: 8px 12px;
         border-radius: 25px;
         border: 1px solid #555;
         background-color: #222;
@@ -94,8 +143,23 @@
         box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
       }
 
-      #input-container button {
+      /* #input-container button {
         padding: 12px 18px;
+        border: none;
+        background-color: #4a90e2;
+        color: white;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      } */
+
+      #input-container button {
+        display: inline-flex;        /* turn on flex alignment */
+        align-items: center;         /* vertical center */
+        justify-content: center;     /* horizontal center */
+        height: 40px;                /* match your input */
+        padding: 0 18px;             /* remove vertical padding */
+        box-sizing: border-box;
         border: none;
         background-color: #4a90e2;
         color: white;
@@ -115,10 +179,17 @@
       }
 
       footer {
-        background-color: #222;
-        color: #888;
-        text-align: center;
-        padding: 20px;
+        position: relative;            /* enable absolute centering */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 2rem;
+      }
+
+      .footer-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
       }
 
       footer a {
@@ -131,32 +202,235 @@
       footer a:hover {
         color: #fff;
       }
+
+      /* ─── flex layout & alignment ───────────────────── */
+      /* 1) THE OUTER WRAPPER: no bubble styling here */
+      .message {
+        display: flex;
+        align-items: flex-start;
+        margin: 12px 0;
+        padding: 0;       /* remove old padding */
+        background: none; /* remove old background */
+      }
+
+      /* 2) FLOAT LEFT/RIGHT */
+      .message.assistant { justify-content: flex-start; }
+      .message.user      { justify-content: flex-end;   }
+
+      /* 3) THE CHAT BUBBLE */
+      .message-content {
+        padding: 10px 14px;
+        border-radius: 8px;
+        line-height: 1.4;
+        background-color: #fdf7e3;
+        /* background-color: #333; */
+        color: #000;
+        max-width: 100%;
+      }
+
+      /* 4) OVERRIDE FOR USER BUBBLE */
+      .message.user .message-content {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+
+      /* assistant left, user right */
+      /* .message.assistant { justify-content: flex-start; } */
+      /* .message.user      { justify-content: flex-end;   } */
+
+      /* ─── avatar container ─────────────────────────── */
+      .message-avatar {
+        margin-right: 12px;          /* push content away from icon */
+        width: 56px;                 
+        height: 56px;
+        border-radius: 50%;          /* make container round */
+        overflow: hidden;            /* crop any overflow */
+        flex-shrink: 0;              /* never shrink */
+        background: #333;            /* optional fallback if icon has transparency */
+      }
+      .message.user .message-avatar {
+        display: none;  /* no avatar for user */
+      }
+
+      /* ─── body (name + bubble) ─────────────────────── */
+      .message-body {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%;
+      }
+
+      /* sender name above bubble */
+      .sender {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+        color: white;
+      }
+
+      .message.assistant .message-content {
+        background-color: #333;
+        color: #ddd;
+      }
+
+      .message.user .message-content {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+      #chat-container {
+        margin-top: -150px;   /* pulls the whole box up—tweak the “150px” until it’s exactly where you want */
+        margin-bottom: 2rem;  /* gives a nice gap down to the footer */
+      }
+
+      #chat-container {
+        background-color: transparent !important;
+        border: 2px solid rgb(111, 27, 27) !important;
+      }
+
+      /* ─── 2) Footer – same maroon background ───────────────── */
+      footer {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* 1) Make the “Send” button maroon */
+      #input-container button {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* 2) Text‐entry box → cream background, black text, maroon border */
+      #input-container input {
+        background-color: #fdf7e3 !important;
+        color: #000           !important;
+        border: 1px solid rgb(111, 27, 27) !important;
+      }
+
+      /* 3) Assistant’s bubbles → cream & black text */
+      .message.assistant .message-content {
+        background-color: #fdf7e3 !important;
+        color: #000               !important;
+      }
+
+      /* 4) User’s bubbles → maroon & black text */
+      .message.user .message-content {
+        background-color: rgb(111, 27, 27) !important;
+        color: #fff                 !important;
+      }
+
+      /* 5) Bar above the input area → maroon, nudged up slightly */
+      #input-container {
+        border-top: 2px solid rgb(111, 27, 27) !important;
+        position: relative;
+        top: -2px; /* pull the bar up by 2px; tweak as you like */
+      }
+
+      /* Centered logo above the headings */
+      .company-logo {
+        display: block;
+        width: 200px;            /* bigger size */
+        height: auto;
+        margin: -1rem auto 1rem; /* negative top margin to lift it up, then 1rem below */
+      }
+
+      /* ─── 1) Lift the logo higher ───────────────── */
+      .company-logo {
+        /* keep it big, but pull it up */
+        width: 200px;
+        height: auto;
+        margin: -4rem auto 1rem;    /* negative top margin lifts it up */
+      }
+
+      /* ─── 2) Lift the header text up, too ───────────────── */
+      header .text-center {
+        position: relative;
+        top: -2rem;                 /* moves the whole block upward */
+      }
+
+      /* ─── 3) (optional) reduce the header’s top padding if you still need more space ─ */
+      header {
+        padding-top: 0.5rem !important;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;      /* vertical centering */
+        justify-content: space-between; /* push items to extremes */
+        padding: 20px 2rem;       /* your existing padding */
+      }
+
+      /* Push the GitHub link to the right */
+      footer a {
+        margin-left: auto;   /* keep it pushed right */
+        margin-right: 1rem;  /* pull it 1rem in from the edge */
+      }
+
+      /* Tidy up any default margins */
+      footer p {
+        margin: 0;
+      }
+
+      /* Maroon scrollbar thumb in the chat area */
+      #messages::-webkit-scrollbar-thumb {
+        background-color: rgb(111, 27, 27) !important;
+      }
+
+      /* Transparent track on WebKit browsers */
+      #messages::-webkit-scrollbar-track {
+        background: transparent !important;
+      }
+
+      /* Firefox scrollbar coloring: thumb then track */
+      #messages {
+        scrollbar-color: rgb(111, 27, 27) transparent !important;
+      }
+
+      /* Make the sender name (“Phishy” and “You”) maroon */
+      .sender {
+        color: rgb(111, 27, 27) !important;
+      }
+
+      /* ─── typing-indicator bounce ───────────────── */
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+      }
+
+      .message.typing .message-avatar {
+        animation: bounce 0.6s ease-in-out infinite;
+      }
+
+
+
     </style>
   </head>
-  <body class="min-h-screen flex flex-col scroll-smooth bg-black text-white">
+  <body class="min-h-screen flex flex-col scroll-smooth">
     <header class="flex items-center justify-center h-screen p-4">
       <div class="text-center space-y-6 w-screen">
+        <img
+          src="/static/company_logo_red.png"
+          alt="Company Logo"
+          class="company-logo"
+        />
         <h1
-          class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+          class="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
         >
           YOU JUST GOT SCAMMED!
         </h1>
         <h1
-          class="text-4xl sm:text-3xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600"
+          class="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
         >
           But you can prevent it with us
         </h1>
         <div class="w-screen">
           <p
-            class="text-lg sm:text-xl md:text-xl text-gray-300 max-w-3xl mx-auto"
+            class="text-lg sm:text-xl md:text-xl max-w-3xl mx-auto"
           >
             Chat with our chat-bot <br />
-            Learn what happened and how to avoid being scammed
+            Learn how to avoid being scammed
           </p>
         </div>
       </div>
     </header>
-    <!-- Features Section -->
 
     <!-- Chat Container -->
     <div id="chat-container">
@@ -169,18 +443,54 @@
 
     <!-- Footer -->
     <footer>
-      <p>© <span id="year"></span> Aryan Khanna. All rights reserved.</p>
+      <!-- Left: friend test -->
+      <div id="friend-test-container" class="flex items-center space-x-2">
+        <input
+          type="email"
+          id="friend-email-input"
+          placeholder="Friend’s email..."
+          class="bg-transparent border-b border-white text-white placeholder-gray-400 w-36 outline-none"
+        />
+        <button
+          onclick="generatePhishingLink()"
+          class="text-white hover:text-gray-500 font-semibold"
+        >
+          Test Your Friend
+        </button>
+      </div>
+    
+      <!-- Center: Phish [logo] Guard -->
+      <div class="footer-center flex items-center gap-2 text-white font-semibold">
+        <span>Phish</span>
+        <img
+          src="/static/company_logo_inverted.png"
+          alt="Logo"
+          class="h-12 w-auto"
+        />
+        <span>Guard</span>
+      </div>
+    
+      <!-- Right: GitHub link -->
       <a
         href="https://github.com/aryank09/UWB-Hacks-25"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-white hover:text-gray-500 transition-colors duration-300 font-semibold text-lg flex items-center gap-2"
+        class="text-white hover:text-gray-500 font-semibold flex items-center gap-2"
       >
-        <i data-lucide="github" class="w-5 h-5"></i> GitHub
+        <i data-lucide="github" class="w-5 h-5"></i>
+        GitHub
       </a>
     </footer>
+    
+    
+    
 
     <script>
+      // ─── BOT + USER CONFIG ─────────────────────────────
+      const BOT_NAME = "Phishy";
+      const BOT_ICON = "/static/chatbot_icon.png";  // put your PNG in ./static/
+      const USER_NAME = "You";
+      // ────────────────────────────────────────────────────
       firstMessage = `Hey there! 👋  
 No worries — you're safe here.  
 You just experienced a **simulated phishing attempt** — and it's a good thing!  
@@ -188,7 +498,13 @@ You just experienced a **simulated phishing attempt** — and it's a good thing!
 Phishing is when someone tries to trick you into clicking bad links, giving up passwords, or downloading harmful stuff. It happens every day to millions of people.  
   
 Let’s work together to make sure you can **spot and stop** phishing attacks in the future! 🚀  
-Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
+
+Which would you like to do first?
+1) Learn what phishing is and how it tricks people
+2) Get three quick, easy safety tips
+3) Try a short quiz to spot a phishy message
+
+(Type **1** **2** or **3** to select an option or **ask any question**!)`;
 
       document
         .getElementById("message-input")
@@ -200,79 +516,129 @@ Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
 
       displayMessage(firstMessage, "assistant");
 
-      async function sendMessage() {
-        const input = document.getElementById("message-input");
-        const button = document.querySelector("#input-container button");
-        const message = input.value;
-        if (!message) return;
+      
+      function showTypingIndicator() {
+        const messagesContainer = document.getElementById("messages");
+        const typingEl = document.createElement("div");
+        typingEl.className = "message assistant typing";
 
-        // Display user message
-        displayMessage(message, "user");
+        const avatarEl = document.createElement("div");
+        avatarEl.className = "message-avatar";
+        const img = document.createElement("img");
+        img.src = BOT_ICON;
+        img.alt = BOT_NAME;
+        img.className = "sender-icon";
+        avatarEl.appendChild(img);
 
-        // Clear input and disable controls
-        input.value = "";
-        input.disabled = true;
-        button.disabled = true;
+        typingEl.appendChild(avatarEl);
+        messagesContainer.appendChild(typingEl);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        return typingEl;
+      }
+      
 
-        try {
-          const response = await fetch("http://localhost:8001/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ content: message, source: "user" }),
-          });
 
-          const data = await response.json();
-          if (!response.ok) {
-            // Handle error response
-            if (data.detail && data.detail.type === "error") {
+      
+        async function sendMessage() {
+          const input   = document.getElementById("message-input");
+          const button  = document.querySelector("#input-container button");
+          const userMsg = input.value.trim();
+          if (!userMsg) return;
+
+          // show user’s own message
+          displayMessage(userMsg, "user");
+
+          // clear + disable
+          input.value     = "";
+          input.disabled  = true;
+          button.disabled = true;
+
+          // start typing-indicator
+          const typingEl = showTypingIndicator();
+
+          let data, ok;
+          try {
+            const response = await fetch("http://localhost:8001/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ content: userMsg, source: "user" }),
+            });
+            ok   = response.ok;
+            data = await response.json();
+          } catch (error) {
+            console.error("Error:", error);
+            ok   = false;
+            data = { detail: "Could not reach the server." };
+          }
+
+          // remove the “typing” avatar
+          typingEl.remove();
+
+          // show the real reply (or error)
+          if (ok) {
+            displayMessage(data.content, "assistant");
+          } else {
+            if (data.detail?.type === "error") {
               displayMessage(data.detail.content, "error");
             } else {
-              displayMessage(
-                "Error: " + (data.detail || "Unknown error"),
-                "error"
-              );
+              displayMessage("Error: " + (data.detail || "Unknown error"), "error");
             }
-          } else {
-            displayMessage(data.content, "assistant");
           }
-        } catch (error) {
-          console.error("Error:", error);
-          displayMessage("Error: Could not reach the server.", "error");
-        } finally {
-          // Re-enable controls
-          input.disabled = false;
+
+          // re-enable
+          input.disabled  = false;
           button.disabled = false;
           input.focus();
         }
-      }
+
 
       function displayMessage(content, source) {
         const messagesContainer = document.getElementById("messages");
-        const messageElement = document.createElement("div");
-        messageElement.className = `message ${source}`;
 
-        const labelElement = document.createElement("span");
-        labelElement.className = "label";
-        labelElement.textContent = source;
+        // 1) outer wrapper
+        const msgEl = document.createElement("div");
+        msgEl.className = `message ${source}`;
 
-        const contentElement = document.createElement("div");
-        contentElement.className = "content";
+        // 2) avatar slot
+        const avatarEl = document.createElement("div");
+        avatarEl.className = "message-avatar";
+        if (source === "assistant") {
+          const img = document.createElement("img");
+          img.src = BOT_ICON;
+          img.alt = BOT_NAME;
+          img.className = "sender-icon";
+          avatarEl.appendChild(img);
+        }
+        msgEl.appendChild(avatarEl);
 
-        // Simple Markdown parsing:
-        const formattedContent = content
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold **text**
-          .replace(/\n/g, "<br>") // New lines
-          .replace(/`(.*?)`/g, "<code>$1</code>"); // Inline code `text`
+        // 3) body (name + bubble)
+        const bodyEl = document.createElement("div");
+        bodyEl.className = "message-body";
 
-        contentElement.innerHTML = formattedContent;
+        // 3a) sender name
+        const senderEl = document.createElement("div");
+        senderEl.className = "sender";
+        senderEl.textContent = source === "assistant" ? BOT_NAME : USER_NAME;
+        bodyEl.appendChild(senderEl);
 
-        messageElement.appendChild(labelElement);
-        messageElement.appendChild(contentElement);
-        messagesContainer.appendChild(messageElement);
+        // 3b) bubble content
+        const contentEl = document.createElement("div");
+        contentEl.className = "message-content";
+        const formatted = content
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br>")
+          .replace(/`(.*?)`/g, "<code>$1</code>");
+        contentEl.innerHTML = formatted;
+        bodyEl.appendChild(contentEl);
+
+        msgEl.appendChild(bodyEl);
+
+        // 4) add to DOM
+        messagesContainer.appendChild(msgEl);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
+
+
 
       async function loadHistory() {
         try {
@@ -292,5 +658,14 @@ Ready to learn 3 easy ways to stay safe online? (Type "yes" to continue!)`;
       // Load chat history when the page loads
       window.onload = loadHistory;
     </script>
+
+    <script>
+      function generatePhishingLink() {
+        const input = document.getElementById('friend-email-input');
+        input.value = '';
+        input.placeholder = 'Phishing test sent!';
+      }
+    </script>
+  
   </body>
 </html>
